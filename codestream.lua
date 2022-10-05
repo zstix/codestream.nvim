@@ -4,9 +4,9 @@ local bufnr = 1
 
 -- TODO: function for getting key
 local cmarks = {
-  ["sample.ts:3"] = {
+  ["codestream.lua:6"] = {
     id = 123,
-    start = 3,
+    start = 6,
     finish = 8,
     file = "sample.ts",
     branch = "develop",
@@ -42,7 +42,27 @@ local create_sign = function(bufnr, lnum)
   )
 end
 
-local get_cmark = function(lnum)
+local create_window = function()
+  -- TODO: calculate size based on UI?
+  local width = 80
+  local height = 40
+
+  -- create a buffer that's listed but scratch
+  local buf = vim.api.nvim_create_buf(false, true)
+
+  -- get the current UI
+  local ui = vim.api.nvim_list_uis()[1]
+
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = 'editor',
+    width = width,
+    height = height,
+    col = (ui.width / 2) - (width / 2),
+    row = (ui.height / 2) - (height / 2),
+    anchor = 'NW',
+    style = 'minimal',
+    border = 'rounded',
+  })
 end
 
 vim.api.nvim_create_user_command("CodeStream", function(args)
@@ -53,12 +73,15 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
   --   create_sign(bufnr, args.line1)
   -- end
 
+  create_window()
+
   local key = vim.fn.expand('%') .. ':' .. args.line1
   local m = cmarks[key]
 
   if m == nil then return end
 
   print(vim.inspect(m))
+
   -- TODO: open a floating buffer?
 end, { range = true })
 
