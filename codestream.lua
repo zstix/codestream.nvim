@@ -1,4 +1,4 @@
--- local comment = require("comment")
+local comment = require("comment")
 
 local plugin_key = "codestream"
 
@@ -6,17 +6,21 @@ local bufnr = 1
 
 -- TODO: function for getting key
 local cmarks = {
-  ["codestream.lua:6"] = {
+  ["codestream.lua:8"] = {
     id = 123,
-    start = 6,
-    finish = 8,
+    start = 8,
+    finish = 29,
     file = "sample.ts",
     branch = "develop",
     sha = "bb507c7", -- taken from vi
     activity = {
       {
         action = "comment",
-        author = "zstix",
+        author = {
+          first_name = "Zack",
+          last_name = "Stickles",
+          username = "zstix",
+        },
         date = "date_goes_here", -- TODO
         text = "Why are we using snake_case here?",
       },
@@ -45,26 +49,23 @@ local create_sign = function(bufnr, lnum)
 end
 
 local create_window = function()
-  -- TODO: calculate size based on UI?
-  local width = 80
-  local height = 40
-
-  -- create a buffer that's listed but scratch
   local buf = vim.api.nvim_create_buf(false, true)
 
-  -- get the current UI
   local ui = vim.api.nvim_list_uis()[1]
+  local width = 60
+  local height = math.floor(ui.height * 0.9)
 
   local win = vim.api.nvim_open_win(buf, true, {
     relative = 'editor',
     width = width,
     height = height,
-    col = (ui.width / 2) - (width / 2),
+    col = ui.width - width,
     row = (ui.height / 2) - (height / 2),
     anchor = 'NW',
     style = 'minimal',
-    border = 'rounded',
   })
+
+  return buf
 end
 
 vim.api.nvim_create_user_command("CodeStream", function(args)
@@ -75,14 +76,18 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
   --   create_sign(bufnr, args.line1)
   -- end
 
-  create_window()
 
   local key = vim.fn.expand('%') .. ':' .. args.line1
   local m = cmarks[key]
 
   if m == nil then return end
 
-  print(vim.inspect(m))
+  local buf = create_window()
+  local comment = comment.render(buf, m.activity[1])
+
+  -- comment.render(cmarks["codestream.lua:6"].activity[1])
+
+  -- print(vim.inspect(m))
 
   -- TODO: open a floating buffer?
 end, { range = true })
