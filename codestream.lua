@@ -53,42 +53,72 @@ local create_window = function(title)
   local width = 60
   local height = math.floor(ui.height * 0.9)
 
-  -- code
-  local code_buf = vim.api.nvim_create_buf(false, true)
-  local code_height = 10 -- TODO: code size or max
+  -- frame
+  local frame_buf = vim.api.nvim_create_buf(false, true)
+  local frame_height = 10 -- TODO: code size or max
 
-  vim.api.nvim_open_win(code_buf, true, {
+  local frame_win = vim.api.nvim_open_win(frame_buf, true, {
     relative = 'editor',
     width = width,
-    height = code_height,
+    height = frame_height,
     col = ui.width - width,
     row = (ui.height / 2) - (height / 2),
     anchor = 'NW',
     style = 'minimal',
+    zindex = 50,
   })
   -- TODO: abstract?
   local lines = { '╭─ ' .. title .. ' ' .. string.rep('─', width - 5 - string.len(title)) .. '╮' }
   local empty_line = '│' .. string.rep(' ', width - 2) .. '│'
-  for i=1,(code_height - 2) do
+  for i=1,(frame_height - 2) do
     table.insert(lines, empty_line)
   end
   table.insert(lines, '╰' .. string.rep('─', width - 2) .. '╯')
 
-  vim.api.nvim_buf_set_lines(code_buf, 0, -1, false, lines)
+  vim.api.nvim_buf_set_lines(frame_buf, 0, -1, false, lines)
+  vim.api.nvim_win_set_option(frame_win, "winhl", "NormalFloat:Pmenu")
+
+  -- code
+  local code_buf = vim.api.nvim_create_buf(false, true)
+  local code_height = 8 -- TODO: code size or max
+  local code_win = vim.api.nvim_open_win(code_buf, true, {
+    relative = 'editor',
+    width = width - 2,
+    height = code_height,
+    col = ui.width - width + 1,
+    row = (ui.height / 2) - (height / 2) + 1,
+    anchor = 'NW',
+    style = 'minimal',
+    zindex = 60,
+  })
+
+  -- TODO: actual file buffer, not this other stuff
+  local snippet = vim.api.nvim_buf_call(bufnr, function()
+    return vim.fn.getline(8, 15)
+  end)
+
+  vim.api.nvim_buf_set_lines(code_buf, 0, -1, false, snippet)
+  vim.api.nvim_win_set_option(code_win, "winhl", "NormalFloat:Normal")
+
+  -- TODO: better way?
+  vim.api.nvim_buf_call(code_buf, function()
+    vim.cmd('set ft=lua')
+  end)
 
   -- activity
   local activity_buf = vim.api.nvim_create_buf(false, true)
-  local activity_height = height - code_height
+  local activity_height = height - frame_height
 
-  vim.api.nvim_open_win(activity_buf, true, {
+  local activity_win = vim.api.nvim_open_win(activity_buf, true, {
     relative = 'editor',
     width = width,
     height = activity_height,
     col = ui.width - width,
-    row = (ui.height / 2) - (height / 2) + code_height,
+    row = (ui.height / 2) - (height / 2) + frame_height,
     anchor = 'NW',
     style = 'minimal',
   })
+  vim.api.nvim_win_set_option(activity_win, "winhl", "NormalFloat:Pmenu")
 
   return activity_buf
 end
