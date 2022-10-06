@@ -21,13 +21,13 @@ function comment.render(buf, opts)
   table.insert(result, " ╰──╯")
 
   -- TODO: wrap at certain character length?
-  table.insert(result, " " .. opts.text)
+  table.insert(result, "  " .. opts.text)
   table.insert(result, " ")
 
   -- TODO: offset position
   table.insert(result, "          " .. opts.date)
 
-  vim.api.nvim_buf_set_lines(buf, -1, -1, false, result)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, result)
 
   -- print(table.concat(result, "\n"))
 end

@@ -1,7 +1,7 @@
 local comment = require("comment")
 
 local plugin_key = "codestream"
-
+local ns = vim.api.nvim_create_namespace(plugin_key .. "_ns")
 local bufnr = 1
 
 -- TODO: function for getting key
@@ -10,7 +10,7 @@ local cmarks = {
     id = 123,
     start = 8,
     finish = 29,
-    file = "sample.ts",
+    file = "codestream.lua",
     branch = "develop",
     sha = "bb507c7", -- taken from vi
     activity = {
@@ -48,24 +48,49 @@ local create_sign = function(bufnr, lnum)
   )
 end
 
-local create_window = function()
-  local buf = vim.api.nvim_create_buf(false, true)
-
+local create_window = function(title)
   local ui = vim.api.nvim_list_uis()[1]
   local width = 60
   local height = math.floor(ui.height * 0.9)
 
-  local win = vim.api.nvim_open_win(buf, true, {
+  -- code
+  local code_buf = vim.api.nvim_create_buf(false, true)
+  local code_height = 10 -- TODO: code size or max
+
+  vim.api.nvim_open_win(code_buf, true, {
     relative = 'editor',
     width = width,
-    height = height,
+    height = code_height,
     col = ui.width - width,
     row = (ui.height / 2) - (height / 2),
     anchor = 'NW',
     style = 'minimal',
   })
+  -- TODO: abstract?
+  local lines = { '╭─ ' .. title .. ' ' .. string.rep('─', width - 5 - string.len(title)) .. '╮' }
+  local empty_line = '│' .. string.rep(' ', width - 2) .. '│'
+  for i=1,(code_height - 2) do
+    table.insert(lines, empty_line)
+  end
+  table.insert(lines, '╰' .. string.rep('─', width - 2) .. '╯')
 
-  return buf
+  vim.api.nvim_buf_set_lines(code_buf, 0, -1, false, lines)
+
+  -- activity
+  local activity_buf = vim.api.nvim_create_buf(false, true)
+  local activity_height = height - code_height
+
+  vim.api.nvim_open_win(activity_buf, true, {
+    relative = 'editor',
+    width = width,
+    height = activity_height,
+    col = ui.width - width,
+    row = (ui.height / 2) - (height / 2) + code_height,
+    anchor = 'NW',
+    style = 'minimal',
+  })
+
+  return activity_buf
 end
 
 vim.api.nvim_create_user_command("CodeStream", function(args)
@@ -77,12 +102,13 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
   -- end
 
 
-  local key = vim.fn.expand('%') .. ':' .. args.line1
+  local key = vim.fn.expand('%') .. ':8'
+  -- local key = vim.fn.expand('%') .. ':' .. args.line1
   local m = cmarks[key]
 
   if m == nil then return end
 
-  local buf = create_window()
+  local buf = create_window(m.file .. ':' .. m.start)
   local comment = comment.render(buf, m.activity[1])
 
   -- comment.render(cmarks["codestream.lua:6"].activity[1])
