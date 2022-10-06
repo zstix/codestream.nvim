@@ -1,3 +1,5 @@
+-- local comment = require("comment")
+
 local plugin_key = "codestream"
 
 local bufnr = 1
