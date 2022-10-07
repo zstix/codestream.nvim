@@ -21,7 +21,7 @@ local cmarks = {
           last_name = "Stickles",
           username = "zstix",
         },
-        date = "date_goes_here", -- TODO
+        date = "2022.10.07", -- TODO: time
         text = "Why are we using snake_case here?",
       },
     },
@@ -48,10 +48,11 @@ local create_sign = function(bufnr, lnum)
   )
 end
 
-local create_window = function(title)
+local create_window = function(m)
   local ui = vim.api.nvim_list_uis()[1]
   local width = 60
   local height = math.floor(ui.height * 0.9)
+  local title = m.file .. ':' .. m.start
 
   -- frame
   local frame_buf = vim.api.nvim_create_buf(false, true)
@@ -92,7 +93,7 @@ local create_window = function(title)
     zindex = 60,
   })
 
-  -- TODO: actual file buffer, not this other stuff
+  -- TODO: actual file buffer, not this other stuff?
   local snippet = vim.api.nvim_buf_call(bufnr, function()
     return vim.fn.getline(8, 15)
   end)
@@ -119,6 +120,9 @@ local create_window = function(title)
     style = 'minimal',
   })
   vim.api.nvim_win_set_option(activity_win, "winhl", "NormalFloat:Pmenu")
+  vim.api.nvim_win_set_option(activity_win, "scl", "yes:1")
+
+  local comment = comment.render(activity_buf, m.activity[1], width)
 
   return activity_buf
 end
@@ -138,8 +142,7 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
 
   if m == nil then return end
 
-  local buf = create_window(m.file .. ':' .. m.start)
-  local comment = comment.render(buf, m.activity[1])
+  create_window(m) --m.file .. ':' .. m.start)
 
   -- comment.render(cmarks["codestream.lua:6"].activity[1])
 
