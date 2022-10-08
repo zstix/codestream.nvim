@@ -140,10 +140,19 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
     group = vim.api.nvim_create_augroup(plugin_key .. "_augroup", { clear = true }),
     pattern = "*", -- TODO: current buffer?
     callback = function(data)
-      -- data.file in wins?
-      -- close all other wins
-      print(vim.inspect(data))
-      print(vim.inspect(wins))
+      local is_cs_win = false
+      for _, win in ipairs(wins) do
+        if tonumber(data.file) == win then
+          is_cs_win = true
+          break
+        end
+      end
+      if is_cs_win then
+        for _, win in ipairs(wins) do
+          vim.api.nvim_win_close(win, false)
+        end
+        wins = {}
+      end
     end,
   })
 
