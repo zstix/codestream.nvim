@@ -3,12 +3,13 @@ local comment = require("comment")
 local plugin_key = "codestream"
 local ns = vim.api.nvim_create_namespace(plugin_key .. "_ns")
 local bufnr = 1
+local wins = {}
 
 -- TODO: function for getting key
 local cmarks = {
-  ["codestream.lua:8"] = {
+  ["codestream.lua:9"] = {
     id = 123,
-    start = 8,
+    start = 9,
     finish = 29,
     file = "codestream.lua",
     branch = "develop",
@@ -68,6 +69,9 @@ local create_window = function(m)
     style = 'minimal',
     zindex = 50,
   })
+
+  table.insert(wins, frame_win)
+
   -- TODO: abstract?
   local lines = { '╭─ ' .. title .. ' ' .. string.rep('─', width - 5 - string.len(title)) .. '╮' }
   local empty_line = '│' .. string.rep(' ', width - 2) .. '│'
@@ -92,10 +96,11 @@ local create_window = function(m)
     style = 'minimal',
     zindex = 60,
   })
+  table.insert(wins, code_win)
 
   -- TODO: actual file buffer, not this other stuff?
   local snippet = vim.api.nvim_buf_call(bufnr, function()
-    return vim.fn.getline(8, 15)
+    return vim.fn.getline(m.start, m.start + 6)
   end)
 
   vim.api.nvim_buf_set_lines(code_buf, 0, -1, false, snippet)
@@ -119,6 +124,9 @@ local create_window = function(m)
     anchor = 'NW',
     style = 'minimal',
   })
+
+  table.insert(wins, activity_win)
+
   vim.api.nvim_win_set_option(activity_win, "winhl", "NormalFloat:Pmenu")
   vim.api.nvim_win_set_option(activity_win, "scl", "yes:1")
 
@@ -128,6 +136,17 @@ local create_window = function(m)
 end
 
 vim.api.nvim_create_user_command("CodeStream", function(args)
+  vim.api.nvim_create_autocmd("WinClosed", {
+    group = vim.api.nvim_create_augroup(plugin_key .. "_augroup", { clear = true }),
+    pattern = "*", -- TODO: current buffer?
+    callback = function(data)
+      -- data.file in wins?
+      -- close all other wins
+      print(vim.inspect(data))
+      print(vim.inspect(wins))
+    end,
+  })
+
   -- print("args", vim.inspect(args))
 
   -- TODO: check if theres a mark on this line first
@@ -136,7 +155,7 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
   -- end
 
 
-  local key = vim.fn.expand('%') .. ':8'
+  local key = vim.fn.expand('%') .. ':9'
   -- local key = vim.fn.expand('%') .. ':' .. args.line1
   local m = cmarks[key]
 
