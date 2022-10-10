@@ -1,8 +1,0 @@
-╭──╮
-│zs│ Zack Stickles (@zstix)
-╰──╯
- Why are we doing it this way? I think we could
- probably do this a better way by using neovim
- instead of VSCode.
-
-                                 15 minutes ago

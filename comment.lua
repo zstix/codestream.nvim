@@ -11,14 +11,14 @@ local function parseDate(timestr)
   return os.date("%A %b. %d", time)
 end
 
-local function applyColor(bufnr, lines)
-  print(lines)
-  -- TODO: move colors to settings
-  vim.cmd("hi CodeStreamGreen guifg=#1CE783")
+local function applyColor(bufnr, num_lines)
+  vim.api.nvim_buf_call(bufnr, function()
+    -- TODO: move colors to settings
+    vim.cmd("hi CodeStreamGreen guifg=#1CE783")
 
-  -- TODO: both work, but only 1 gets applied
-  vim.fn.execute("match CodeStreamGreen /\\%>0l\\%<4l\\%1c.\\{4\\}/")
-  -- vim.fn.execute("match Comment /\\%" .. lines .. "l\\.*/")
+    vim.fn.execute("syntax match CodeStreamGreen /\\%>0l\\%<4l\\%1c.\\{4\\}/")
+    vim.fn.execute("syntax match Comment /\\%" .. num_lines .. "l.*/")
+  end)
 end
 
 function comment.render(buf, opts, width)
