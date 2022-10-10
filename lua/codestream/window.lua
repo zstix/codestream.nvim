@@ -1,4 +1,5 @@
 local comment = require("./comment")
+local utils = require("./utils")
 
 local window = {}
 
@@ -9,16 +10,8 @@ local base_window = {
   zindex = 60,
 }
 
--- TODO: move to utils file
-local merge_tables = function(t1, t2)
-  local result = {}
-  for k, v in pairs(t1) do result[k] = v end
-  for k, v in pairs(t2) do result[k] = v end
-  return result
-end
-
 local create_subwindow = function(state, bufnr, opts)
-  local win = vim.api.nvim_open_win(bufnr, true, merge_tables(base_window, opts))
+  local win = vim.api.nvim_open_win(bufnr, true, utils.merge_tables(base_window, opts))
   vim.api.nvim_win_set_option(win, "winhl", "NormalFloat:Pmenu")
   table.insert(state.wins, win)
   return win

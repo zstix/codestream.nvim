@@ -1,44 +1,47 @@
+local utils = require('./utils')
+
 local comment = {}
 
-local function parseDate(timestr)
-  local date = vim.fn.split(timestr, "\\.")
-  local y = tonumber(date[1])
-  local m = tonumber(date[2])
-  local d = tonumber(date[3])
-  local time = os.time({year=y, month=m, day=d})
+local parseDate = function(timestr)
+  local parts = vim.fn.split(timestr, "\\:")
+  local date = vim.fn.split(parts[1], "\\.")
+  local time = vim.fn.split(parts[2], "\\.")
 
-  -- Friday Oct. 7
-  return os.date("%A %b. %d", time)
+  local year = tonumber(date[1])
+  local month = tonumber(date[2])
+  local day = tonumber(date[3])
+  local hour = tonumber(time[1])
+  local minute = tonumber(time[2])
+
+  local datetime = os.time({year=year, month=month, day=day, hour=hour, minute=minute})
+
+  return utils.time_since(datetime)
 end
 
-local function applyColor(bufnr, num_lines)
+local applyColor = function(bufnr)
   vim.api.nvim_buf_call(bufnr, function()
     -- TODO: move colors to settings
     vim.cmd("hi CodeStreamGreen guifg=#1CE783")
 
     vim.fn.execute("syntax match CodeStreamGreen /\\%>0l\\%<4l\\%1c.\\{4\\}/")
-    vim.fn.execute("syntax match Comment /\\%" .. num_lines .. "l.*/")
+    vim.fn.execute("syntax match Comment /\\%2l\\s[0-9].*/")
   end)
 end
 
 function comment.render(buf, opts, width)
   local a = opts.author
-  local full_name = a.first_name .. " " .. a.last_name
-  local initials = string.sub(a.first_name, 1, 1) .. string.sub(a.last_name, 1, 1)
+
+  local date = parseDate(opts.date)
 
   local result = {"╭──╮"}
-  table.insert(result, "│" .. initials .. "│ " .. full_name .. " (" .. a.username .. ")")
+  table.insert(result, "│@" .. string.sub(a.username, 1, 1) .. "│ " .. a.username .. " " .. date)
   table.insert(result, "╰──╯")
 
   table.insert(result, opts.text)
-  table.insert(result, " ")
-
-  local date = parseDate(opts.date)
-  table.insert(result, string.rep(' ', width - 4 - string.len(date)) .. date)
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, result)
 
-  applyColor(buf, #result)
+  applyColor(buf)
 end
 
 return comment

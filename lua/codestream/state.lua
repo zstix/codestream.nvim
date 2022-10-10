@@ -29,11 +29,11 @@ state.cmarks["init.lua:9"] = {
     {
       action = "comment",
       author = {
-        first_name = "Zack",
-        last_name = "Stickles",
+        -- first_name = "Zack",
+        -- last_name = "Stickles",
         username = "zstix",
       },
-      date = "2022.10.07", -- TODO: time
+      date = "2022.10.07:13.20",
       text = "Why are we using snake_case here?",
     },
   },
