@@ -1,4 +1,4 @@
-local comment = require("comment")
+local comment = require("./comment")
 
 local plugin_key = "codestream"
 local ns = vim.api.nvim_create_namespace(plugin_key .. "_ns")
@@ -7,7 +7,7 @@ local wins = {}
 
 -- TODO: function for getting key
 local cmarks = {
-  ["codestream.lua:9"] = {
+  ["init.lua:9"] = {
     id = 123,
     start = 9,
     finish = 29,
