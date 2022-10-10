@@ -33,29 +33,12 @@ function comment.render(buf, opts, width)
   table.insert(result, opts.text)
   table.insert(result, " ")
 
-  -- TODO: offset position
   local date = parseDate(opts.date)
   table.insert(result, string.rep(' ', width - 4 - string.len(date)) .. date)
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, result)
 
   applyColor(buf, #result)
-
-  -- for testing
-  -- print(table.concat(result, "\n"))
 end
-
--- for testing
--- local test_comment = {
---   action = "comment",
---   author = {
---     first_name = "Zack",
---     last_name = "Stickles",
---     username = "zstix",
---   },
---   date = "2022.10.07", -- TODO: time
---   text = "Why are we using snake_case here?",
--- }
--- comment.render(0, test_comment, 40)
 
 return comment
