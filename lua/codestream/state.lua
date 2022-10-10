@@ -29,12 +29,18 @@ state.cmarks["init.lua:9"] = {
     {
       action = "comment",
       author = {
-        -- first_name = "Zack",
-        -- last_name = "Stickles",
         username = "zstix",
       },
       date = "2022.10.07:13.20",
       text = "Why are we using snake_case here?",
+    },
+    {
+      action = "comment",
+      author = {
+        username = "marcelo",
+      },
+      date = "2022.10.07:14.25",
+      text = "I've copied the properties from our legacy Perl implementation. This should be fixed automatically once we format the entire codebase with Prettier.",
     },
   },
 };

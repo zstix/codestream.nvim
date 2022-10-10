@@ -96,8 +96,9 @@ function window.create(state, m)
   })
 
   vim.api.nvim_win_set_option(activity_win, "scl", "yes:1")
+  vim.api.nvim_win_set_option(activity_win, "wrap", true)
 
-  local comment = comment.render(activity_buf, m.activity[1], width)
+  local comment = comment.render(activity_buf, m.activity, width)
 
   return activity_buf
 end
