@@ -1,6 +1,11 @@
 local state = require("./state")
 local window = require("./window")
 
+-- TODO: keybinds
+-- TODO: add new comment buffer
+-- TODO: add comment to codemark
+-- TODO: extmarks at the bottom
+
 local setup_autocmds = function(state)
   vim.api.nvim_create_autocmd("WinClosed", {
     group = state.augroup,

@@ -45,6 +45,15 @@ local create_frame_window = function(state, opts)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 end
 
+-- TODO: move to own file?
+local add_help = function(state, bufnr)
+  local help = { "<Leader>g_  c: comment s: comment w/slack", "Comment" }
+
+  vim.api.nvim_buf_set_extmark(bufnr, state.ns, 0, 0, {
+    virt_text = { help }
+  })
+end
+
 function window.create(state, m)
   local ui = vim.api.nvim_list_uis()[1]
   local width = 60
@@ -99,6 +108,8 @@ function window.create(state, m)
   vim.api.nvim_win_set_option(activity_win, "wrap", true)
 
   local comment = comment.render(activity_buf, m.activity, width)
+
+  add_help(state, activity_buf)
 
   return activity_buf
 end

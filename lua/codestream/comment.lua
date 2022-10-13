@@ -42,14 +42,11 @@ local render_comment = function(buf, opts, index)
   table.insert(result, opts.text)
   table.insert(result, " ")
 
-  if index == 1 then
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, result)
-  else
-    vim.api.nvim_buf_set_lines(buf, -1, -1, false, result)
-  end
+  vim.api.nvim_buf_set_lines(buf, -1, -1, false, result)
 end
 
 function comment.render(buf, comments)
+  vim.api.nvim_buf_set_lines(buf, -1, -1, false, { " " })
   for i, comment in pairs(comments) do
     render_comment(buf, comment, i)
   end
