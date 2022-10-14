@@ -1,7 +1,6 @@
 local state = require("./state")
 local window = require("./window")
 
--- TODO: keybinds
 -- TODO: add new comment buffer
 -- TODO: add comment to codemark
 -- TODO: extmarks at the bottom
@@ -12,20 +11,27 @@ local setup_autocmds = function(state)
     pattern = "*", -- TODO: current buffer?
     callback = function(data)
       local is_cs_win = false
-      for _, win in ipairs(state.wins) do
-        if tonumber(data.file) == win then
+      for key, _ in pairs(state.wins) do
+        if tonumber(data.file) == state.wins[key] then
           is_cs_win = true
           break
         end
       end
       if is_cs_win then
-        for _, win in ipairs(state.wins) do
-          vim.api.nvim_win_close(win, false)
+        for key, _ in pairs(state.wins) do
+          vim.api.nvim_win_close(state.wins[key], false)
         end
         state.wins = {}
       end
     end,
   })
+end
+
+-- TODO: make this configurable
+local setup_keymaps = function(bufnr)
+  local opts = { noremap = true }
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>cc', ':CodeStreamComment<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>cs', ':CodeStreamCommentWithSlack<CR>', opts)
 end
 
 vim.api.nvim_create_user_command("CodeStream", function(args)
@@ -43,8 +49,17 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
   if m == nil then return end
 
   -- create_window(state, m)
-  window.create(state, m)
+  local bufnr = window.create(state, m)
+  setup_keymaps(bufnr)
 end, { range = true })
+
+vim.api.nvim_create_user_command("CodeStreamComment", function(args)
+  print("Comment!")
+end, {})
+
+vim.api.nvim_create_user_command("CodeStreamCommentWithSlack", function(args)
+  print("Comment! Now with Slack!")
+end, {})
 
 -- for _, m in pairs(cmarks) do
 --   create_sign(bufnr, m.start)

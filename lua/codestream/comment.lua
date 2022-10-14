@@ -42,7 +42,12 @@ local render_comment = function(buf, opts, index)
   table.insert(result, opts.text)
   table.insert(result, " ")
 
-  vim.api.nvim_buf_set_lines(buf, -1, -1, false, result)
+  -- vim.api.nvim_buf_set_lines(buf, -1, -1, false, result)
+  if index == 1 then
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, result)
+  else
+    vim.api.nvim_buf_set_lines(buf, -1, -1, false, result)
+  end
 end
 
 function comment.render(buf, comments)
