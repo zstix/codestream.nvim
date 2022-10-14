@@ -106,9 +106,11 @@ function window.create(state, m)
     row = (ui.height / 2) - (height / 2) + frame_height + activity_height,
   })
 
-  vim.api.nvim_win_set_option(input_win, "winhl", "Normal:Comment")
+  -- vim.api.nvim_win_set_option(input_win, "winhl", "Normal:Comment")
   vim.api.nvim_buf_set_lines(input_buf, 0, -1, false, get_help_text())
-
+  vim.api.nvim_buf_call(input_buf, function()
+    vim.fn.execute("syntax match Comment /\\%1l.*/")
+  end)
 
   -- activity
   local activity_buf = vim.api.nvim_create_buf(false, true)

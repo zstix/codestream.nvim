@@ -42,7 +42,6 @@ local render_comment = function(buf, opts, index)
   table.insert(result, opts.text)
   table.insert(result, " ")
 
-  -- vim.api.nvim_buf_set_lines(buf, -1, -1, false, result)
   if index == 1 then
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, result)
   else
@@ -57,6 +56,21 @@ function comment.render(buf, comments)
   end
 
   apply_color(buf)
+end
+
+function comment.add_form(state)
+  local comment_height = 8
+  local activity_height = vim.api.nvim_win_get_height(state.wins["activity"])
+  local row = vim.api.nvim_win_get_config(state.wins["activity"]).row[false]
+
+  vim.api.nvim_win_set_height(state.wins["activity"], activity_height - comment_height - 1)
+
+  local config = utils.merge_tables(vim.api.nvim_win_get_config(state.wins["input"]), {
+    height = comment_height + 2,
+    row =  row + activity_height - comment_height - 1,
+  })
+
+  vim.api.nvim_win_set_config(state.wins["input"], config)
 end
 
 return comment

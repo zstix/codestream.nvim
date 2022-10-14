@@ -1,9 +1,9 @@
 local state = require("./state")
 local window = require("./window")
+local comment = require("./comment")
 
 -- TODO: add new comment buffer
 -- TODO: add comment to codemark
--- TODO: extmarks at the bottom
 
 local setup_autocmds = function(state)
   vim.api.nvim_create_autocmd("WinClosed", {
@@ -54,7 +54,7 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
 end, { range = true })
 
 vim.api.nvim_create_user_command("CodeStreamComment", function(args)
-  print("Comment!")
+  comment.add_form(state)
 end, {})
 
 vim.api.nvim_create_user_command("CodeStreamCommentWithSlack", function(args)
