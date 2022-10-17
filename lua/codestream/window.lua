@@ -1,5 +1,6 @@
 local comment = require("./comment")
 local utils = require("./utils")
+local help = require("./help")
 
 local window = {}
 
@@ -32,16 +33,6 @@ local create_frame_window = function(state, opts)
   local lines = utils.get_frame(opts.width, opts.height, opts.title)
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-end
-
--- TODO: move to own file?
-local get_help_text = function()
-  local help = { " <Leader>c_" }
-
-  table.insert(help, "c: comment")
-  table.insert(help, "s: comment w/slack")
-
-  return { vim.fn.join(help, " ") }
 end
 
 function window.create(state, m)
@@ -95,8 +86,7 @@ function window.create(state, m)
     row = (ui.height / 2) - (height / 2) + frame_height + activity_height,
   })
 
-  -- vim.api.nvim_win_set_option(input_win, "winhl", "Normal:Comment")
-  vim.api.nvim_buf_set_lines(input_buf, 0, -1, false, get_help_text())
+  vim.api.nvim_buf_set_lines(input_buf, 0, -1, false, help.get_text(state))
   vim.api.nvim_buf_call(input_buf, function()
     vim.fn.execute("syntax match Comment /\\%1l.*/")
   end)

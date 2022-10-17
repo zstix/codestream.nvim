@@ -5,6 +5,7 @@ local state = {
   ns = vim.api.nvim_create_namespace(plugin_key .. "_ns"),
   augroup = vim.api.nvim_create_augroup(plugin_key .. "_augroup", { clear = true }),
   sign_group = plugin_key .. "_signs",
+  help_state = "init",
   wins = {},
   cmarks = {},
 }

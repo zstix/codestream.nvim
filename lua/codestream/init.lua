@@ -54,6 +54,7 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
 end, { range = true })
 
 vim.api.nvim_create_user_command("CodeStreamComment", function(args)
+  state.help_state = "comment"
   comment.add_form(state)
 end, {})
 

@@ -60,12 +60,14 @@ end
 
 function comment.add_form(state)
   local window = require('./window')
+  local help = require('./help')
 
   local comment_height = 8
   local activity_height = vim.api.nvim_win_get_height(state.wins["activity"])
   local width = vim.api.nvim_win_get_config(state.wins["activity"]).height - 6
   local row = vim.api.nvim_win_get_config(state.wins["activity"]).row[false]
   local col = vim.api.nvim_win_get_config(state.wins["activity"]).col[false]
+  local bufnr = vim.api.nvim_win_get_buf(state.wins["input"])
 
   vim.api.nvim_win_set_height(state.wins["activity"], activity_height - comment_height - 1)
 
@@ -76,8 +78,10 @@ function comment.add_form(state)
 
   vim.api.nvim_win_set_config(state.wins["input"], config)
 
+  -- update help
+  vim.api.nvim_buf_set_lines(bufnr, 0, 0, false, help.get_text(state))
+
   -- draw frame
-  local bufnr = vim.api.nvim_win_get_buf(state.wins["input"])
   local lines = utils.get_frame(width, comment_height + 1, "New comment")
   vim.api.nvim_buf_set_lines(bufnr, 1, -1, false, lines)
 
