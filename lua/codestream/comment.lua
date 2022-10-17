@@ -59,9 +59,13 @@ function comment.render(buf, comments)
 end
 
 function comment.add_form(state)
+  local window = require('./window')
+
   local comment_height = 8
   local activity_height = vim.api.nvim_win_get_height(state.wins["activity"])
+  local width = vim.api.nvim_win_get_config(state.wins["activity"]).height - 6
   local row = vim.api.nvim_win_get_config(state.wins["activity"]).row[false]
+  local col = vim.api.nvim_win_get_config(state.wins["activity"]).col[false]
 
   vim.api.nvim_win_set_height(state.wins["activity"], activity_height - comment_height - 1)
 
@@ -71,6 +75,22 @@ function comment.add_form(state)
   })
 
   vim.api.nvim_win_set_config(state.wins["input"], config)
+
+  -- draw frame
+  local bufnr = vim.api.nvim_win_get_buf(state.wins["input"])
+  local lines = utils.get_frame(width, comment_height + 1, "New comment")
+  vim.api.nvim_buf_set_lines(bufnr, 1, -1, false, lines)
+
+  -- add input bufnr & window
+  local text_buf = vim.api.nvim_create_buf(false, true)
+  local text_win = window.create_subwindow(state, text_buf, "text", {
+    width = width - 2,
+    height = comment_height - 1,
+    col = col + 1,
+    row = row + activity_height - comment_height + 1,
+  })
+
+  vim.api.nvim_win_set_option(text_win, "spell", true)
 end
 
 return comment

@@ -10,7 +10,8 @@ local base_window = {
   zindex = 60,
 }
 
-local create_subwindow = function(state, bufnr, label, opts)
+function window.create_subwindow(state, bufnr, label, opts)
+-- local create_subwindow = function(state, bufnr, label, opts)
   local win = vim.api.nvim_open_win(bufnr, true, utils.merge_tables(base_window, opts))
   vim.api.nvim_win_set_option(win, "winhl", "NormalFloat:Pmenu")
   state.wins[label] = win
@@ -20,7 +21,7 @@ end
 local create_frame_window = function(state, opts)
   local buf = vim.api.nvim_create_buf(false, true)
 
-  local win = create_subwindow(state, buf, "frame", {
+  local win = window.create_subwindow(state, buf, "frame", {
     width = opts.width,
     height = opts.height,
     col = opts.col,
@@ -28,19 +29,7 @@ local create_frame_window = function(state, opts)
     zindex = 50,
   })
 
-  local lines = {}
-
-  if opts.title == nil then
-    table.insert(lines, '╭' .. string.rep('─', opts.width - 2) .. '╮')
-  else
-    table.insert(lines, '╭─ ' .. opts.title .. ' ' .. string.rep('─', opts.width - 5 - string.len(opts.title)) .. '╮')
-  end
-
-  for i=1,(opts.height - 2) do
-    table.insert(lines, '│' .. string.rep(' ', opts.width - 2) .. '│')
-  end
-
-  table.insert(lines, '╰' .. string.rep('─', opts.width - 2) .. '╯')
+  local lines = utils.get_frame(opts.width, opts.height, opts.title)
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 end
@@ -76,7 +65,7 @@ function window.create(state, m)
   -- code
   local code_buf = vim.api.nvim_create_buf(false, true)
 
-  local code_win = create_subwindow(state, code_buf, "code", {
+  local code_win = window.create_subwindow(state, code_buf, "code", {
     width = width - 2,
     height = code_height,
     col = ui.width - width + 1,
@@ -99,7 +88,7 @@ function window.create(state, m)
   -- help
   local input_buf = vim.api.nvim_create_buf(false, true)
 
-  local input_win = create_subwindow(state, input_buf, "input", {
+  local input_win = window.create_subwindow(state, input_buf, "input", {
     width = width,
     height =input_height,
     col = ui.width - width,
@@ -115,7 +104,7 @@ function window.create(state, m)
   -- activity
   local activity_buf = vim.api.nvim_create_buf(false, true)
 
-  local activity_win = create_subwindow(state, activity_buf, "activity", {
+  local activity_win = window.create_subwindow(state, activity_buf, "activity", {
     width = width,
     height = activity_height,
     col = ui.width - width,

@@ -39,4 +39,22 @@ function M.merge_tables(t1, t2)
   return result
 end
 
+function M.get_frame(width, height, title)
+  local lines = {}
+
+  if title == nil then
+    table.insert(lines, '╭' .. string.rep('─', width - 2) .. '╮')
+  else
+    table.insert(lines, '╭─ ' .. title .. ' ' .. string.rep('─', width - 5 - string.len(title)) .. '╮')
+  end
+
+  for i=1,(height - 2) do
+    table.insert(lines, '│' .. string.rep(' ', width - 2) .. '│')
+  end
+
+  table.insert(lines, '╰' .. string.rep('─', width - 2) .. '╯')
+
+  return lines
+end
+
 return M
