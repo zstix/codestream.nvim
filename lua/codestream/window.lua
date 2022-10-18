@@ -109,4 +109,11 @@ function window.create(state, m)
   return activity_buf
 end
 
+function window.close_all(state)
+  for key, _ in pairs(state.wins) do
+    vim.api.nvim_win_close(state.wins[key], false)
+  end
+  state.wins = {}
+end
+
 return window

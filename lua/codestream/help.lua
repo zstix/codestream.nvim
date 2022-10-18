@@ -13,7 +13,7 @@ local get_comment_text = function()
   local help = { " <Leader>c_" }
 
   table.insert(help, "c: comment")
-  table.insert(help, "q: discard")
+  table.insert(help, "d: discard")
 
   return { vim.fn.join(help, " ") }
 end
