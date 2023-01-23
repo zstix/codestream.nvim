@@ -95,7 +95,24 @@ function comment.add_form(state)
     row = row + activity_height - comment_height + 1,
   })
 
+  -- window settings
   vim.api.nvim_win_set_option(text_win, "spell", true)
+  vim.api.nvim_buf_call(text_buf, function()
+    vim.cmd('set ft=markdown')
+  end)
+
+  -- new commands
+  -- TODO: get this working (doesn't seem like command needs to be here)
+  vim.api.nvim_create_user_command("CodeStreamCommentDiscard", function()
+    print('close em')
+    window.close_all(state)
+  end, {})
+
+  vim.api.nvim_buf_call(text_buf, function()
+    local opts = { noremap = true }
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>cc', ':CodeStreamCommentSubmit<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>cd', ':CodeStreamCommentDiscard<CR>', opts)
+  end)
 end
 
 return comment

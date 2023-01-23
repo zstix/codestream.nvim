@@ -18,10 +18,7 @@ local setup_autocmds = function(state)
         end
       end
       if is_cs_win then
-        for key, _ in pairs(state.wins) do
-          vim.api.nvim_win_close(state.wins[key], false)
-        end
-        state.wins = {}
+        window.close_all(state)
       end
     end,
   })
@@ -58,6 +55,7 @@ vim.api.nvim_create_user_command("CodeStreamComment", function(args)
   comment.add_form(state)
 end, {})
 
+-- TODO
 vim.api.nvim_create_user_command("CodeStreamCommentWithSlack", function(args)
   print("Comment! Now with Slack!")
 end, {})
