@@ -1,8 +1,8 @@
-local comment = require("./comment")
-local utils = require("./utils")
-local help = require("./help")
+local Comment = require("./comment")
+local Utils = require("./utils")
+local Help = require("./help")
 
-local window = {}
+local Window = {}
 
 local base_window = {
   relative = 'editor',
@@ -11,18 +11,10 @@ local base_window = {
   zindex = 60,
 }
 
-function window.create_subwindow(state, bufnr, label, opts)
--- local create_subwindow = function(state, bufnr, label, opts)
-  local win = vim.api.nvim_open_win(bufnr, true, utils.merge_tables(base_window, opts))
-  vim.api.nvim_win_set_option(win, "winhl", "NormalFloat:Pmenu")
-  state.wins[label] = win
-  return win
-end
-
-local create_frame_window = function(state, opts)
+local function create_frame_window(state, opts)
   local buf = vim.api.nvim_create_buf(false, true)
 
-  local win = window.create_subwindow(state, buf, "frame", {
+  local win = Window.create_subwindow(state, buf, "frame", {
     width = opts.width,
     height = opts.height,
     col = opts.col,
@@ -30,12 +22,20 @@ local create_frame_window = function(state, opts)
     zindex = 50,
   })
 
-  local lines = utils.get_frame(opts.width, opts.height, opts.title)
+  local lines = Utils.get_frame(opts.width, opts.height, opts.title)
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 end
 
-function window.create(state, m)
+function Window.create_subwindow(state, bufnr, label, opts)
+-- local create_subwindow = function(state, bufnr, label, opts)
+  local win = vim.api.nvim_open_win(bufnr, true, Utils.merge_tables(base_window, opts))
+  vim.api.nvim_win_set_option(win, "winhl", "NormalFloat:Pmenu")
+  state.wins[label] = win
+  return win
+end
+
+function Window.create(state, m)
   local ui = vim.api.nvim_list_uis()[1]
   local width = 60
   -- local height = math.floor(ui.height * 0.9)
@@ -59,7 +59,7 @@ function window.create(state, m)
   -- code
   local code_buf = vim.api.nvim_create_buf(false, true)
 
-  local code_win = window.create_subwindow(state, code_buf, "code", {
+  local code_win = Window.create_subwindow(state, code_buf, "code", {
     width = width - 2,
     height = code_height,
     col = ui.width - width + 1,
@@ -83,7 +83,7 @@ function window.create(state, m)
   -- help
   local input_buf = vim.api.nvim_create_buf(false, true)
 
-  local input_win = window.create_subwindow(state, input_buf, "input", {
+  local input_win = Window.create_subwindow(state, input_buf, "input", {
     width = width,
     height =input_height,
     col = ui.width - width,
@@ -91,7 +91,7 @@ function window.create(state, m)
     row = frame_height + activity_height,
   })
 
-  vim.api.nvim_buf_set_lines(input_buf, 0, -1, false, help.get_text(state))
+  vim.api.nvim_buf_set_lines(input_buf, 0, -1, false, Help.get_text(state))
   vim.api.nvim_buf_call(input_buf, function()
     vim.fn.execute("syntax match Comment /\\%1l.*/")
   end)
@@ -99,7 +99,7 @@ function window.create(state, m)
   -- activity
   local activity_buf = vim.api.nvim_create_buf(false, true)
 
-  local activity_win = window.create_subwindow(state, activity_buf, "activity", {
+  local activity_win = Window.create_subwindow(state, activity_buf, "activity", {
     width = width,
     height = activity_height,
     col = ui.width - width,
@@ -110,16 +110,16 @@ function window.create(state, m)
   vim.api.nvim_win_set_option(activity_win, "scl", "yes:1")
   vim.api.nvim_win_set_option(activity_win, "wrap", true)
 
-  local comment = comment.render(activity_buf, m.activity, width)
+  local comment = Comment.render(activity_buf, m.activity, width)
 
   return activity_buf
 end
 
-function window.close_all(state)
+function Window.close_all(state)
   for key, _ in pairs(state.wins) do
     vim.api.nvim_win_close(state.wins[key], false)
   end
   state.wins = {}
 end
 
-return window
+return Window

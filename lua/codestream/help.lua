@@ -1,6 +1,6 @@
-local help = {}
+local Help = {}
 
-local get_help_text = function()
+local function get_help_text()
   local help = { " <Leader>c_" }
 
   table.insert(help, "c: comment")
@@ -9,7 +9,7 @@ local get_help_text = function()
   return { vim.fn.join(help, " ") }
 end
 
-local get_comment_text = function()
+local function get_comment_text()
   local help = { " <Leader>c_" }
 
   table.insert(help, "c: comment")
@@ -18,7 +18,7 @@ local get_comment_text = function()
   return { vim.fn.join(help, " ") }
 end
 
-function help.get_text(state)
+function Help.get_text(state)
   if state.help_state == "init" then
     return get_help_text()
   elseif state.help_state == "comment" then
@@ -28,4 +28,4 @@ function help.get_text(state)
   end
 end
 
-return help
+return Help

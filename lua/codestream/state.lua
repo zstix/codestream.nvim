@@ -1,5 +1,6 @@
 local plugin_key = "codestream"
 
+-- NOTE: lowercase since this is a singleton
 local state = {
   bufnr = 1,
   ns = vim.api.nvim_create_namespace(plugin_key .. "_ns"),
@@ -9,15 +10,6 @@ local state = {
   wins = {},
   cmarks = {},
 }
-
-function state.get_cmark(filename, lnum)
-  if filename == nil or lnum == nil then
-    filename = vim.fn.expand('%')
-    lnum = vim.fn.line('.')
-  end
-
-  return state.cmarks[filename .. ':' .. lnum]
-end
 
 -- NOTE: for testing
 state.cmarks["init.lua:9"] = {
@@ -45,5 +37,14 @@ state.cmarks["init.lua:9"] = {
     },
   },
 };
+
+function state.get_cmark(filename, lnum)
+  if filename == nil or lnum == nil then
+    filename = vim.fn.expand('%')
+    lnum = vim.fn.line('.')
+  end
+
+  return state.cmarks[filename .. ':' .. lnum]
+end
 
 return state

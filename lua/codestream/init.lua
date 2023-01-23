@@ -1,11 +1,11 @@
 local state = require("./state")
-local window = require("./window")
-local comment = require("./comment")
+local Window = require("./window")
+local Comment = require("./comment")
 
 -- TODO: add new comment buffer
 -- TODO: add comment to codemark
 
-local setup_autocmds = function(state)
+local function setup_autocmds(state)
   vim.api.nvim_create_autocmd("WinClosed", {
     group = state.augroup,
     pattern = "*", -- TODO: current buffer?
@@ -18,14 +18,14 @@ local setup_autocmds = function(state)
         end
       end
       if is_cs_win then
-        window.close_all(state)
+        Window.close_all(state)
       end
     end,
   })
 end
 
 -- TODO: make this configurable
-local setup_keymaps = function(bufnr)
+local function setup_keymaps(bufnr)
   local opts = { noremap = true }
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>cc', ':CodeStreamComment<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>cs', ':CodeStreamCommentWithSlack<CR>', opts)
@@ -46,13 +46,13 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
   if m == nil then return end
 
   -- create_window(state, m)
-  local bufnr = window.create(state, m)
+  local bufnr = Window.create(state, m)
   setup_keymaps(bufnr)
 end, { range = true })
 
 vim.api.nvim_create_user_command("CodeStreamComment", function(args)
   state.help_state = "comment"
-  comment.add_form(state)
+  Comment.add_form(state)
 end, {})
 
 -- TODO

@@ -1,7 +1,7 @@
-local M = {}
+local Utils = {}
 
 -- TODO: fix logic
-function M.time_since(datetime)
+function Utils.time_since(datetime)
   local seconds = math.floor((os.time() - datetime) / 1000)
   local interval = seconds / 31536000
   
@@ -32,14 +32,30 @@ function M.time_since(datetime)
   return math.floor(seconds) .. " seconds ago"
 end
 
-function M.merge_tables(t1, t2)
+function Utils.parse_date(timestr)
+  local parts = vim.fn.split(timestr, "\\:")
+  local date = vim.fn.split(parts[1], "\\.")
+  local time = vim.fn.split(parts[2], "\\.")
+
+  local year = tonumber(date[1])
+  local month = tonumber(date[2])
+  local day = tonumber(date[3])
+  local hour = tonumber(time[1])
+  local minute = tonumber(time[2])
+
+  local datetime = os.time({year=year, month=month, day=day, hour=hour, minute=minute})
+
+  return Utils.time_since(datetime)
+end
+
+function Utils.merge_tables(t1, t2)
   local result = {}
   for k, v in pairs(t1) do result[k] = v end
   for k, v in pairs(t2) do result[k] = v end
   return result
 end
 
-function M.get_frame(width, height, title)
+function Utils.get_frame(width, height, title)
   local lines = {}
 
   if title == nil then
@@ -57,4 +73,4 @@ function M.get_frame(width, height, title)
   return lines
 end
 
-return M
+return Utils

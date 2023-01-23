@@ -1,7 +1,7 @@
-local sign = {}
+local Sign = {}
 
 -- TODO: caching?
-function sign.create(state, lnum)
+function Sign.create(state, lnum)
   vim.fn.sign_define(sign_name, {
     text = "<>",
     texthl = "Comment",
@@ -16,4 +16,4 @@ function sign.create(state, lnum)
   )
 end
 
-return sign
+return Sign

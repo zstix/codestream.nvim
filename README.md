@@ -8,7 +8,7 @@ Codestream plugin for neovim. _Very much_ a proof-of-concept.
 - [x] Open UI
 - [x] Comment dialog
 - [ ] Faster local development
-- [ ] Break modules down better
+- [x] Break modules down better
 - [ ] Create new comment
 - [ ] "Back-end" mock (JSON)
 - [ ] Screenshots?
