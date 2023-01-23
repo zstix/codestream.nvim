@@ -1,5 +1,4 @@
 local Utils = require('./utils')
-
 local Comment = {}
 
 local function apply_color(bufnr)
@@ -81,22 +80,80 @@ function Comment.add_form(state)
 
   -- window settings
   vim.api.nvim_win_set_option(text_win, "spell", true)
+  -- TODO: get this working
   vim.api.nvim_buf_call(text_buf, function()
     vim.cmd('set ft=markdown')
   end)
 
   -- new commands
-  -- TODO: get this working (doesn't seem like command needs to be here)
   vim.api.nvim_create_user_command("CodeStreamCommentDiscard", function()
-    print('close em')
     Window.close_all(state)
   end, {})
 
+  vim.api.nvim_create_user_command("CodeStreamCommentSubmit", function()
+    Comment.add(state)
+  end, {})
+
+
   vim.api.nvim_buf_call(text_buf, function()
     local opts = { noremap = true }
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>cc', ':CodeStreamCommentSubmit<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>cd', ':CodeStreamCommentDiscard<CR>', opts)
+    vim.api.nvim_buf_set_keymap(text_buf, 'n', '<Leader>cc', ':CodeStreamCommentSubmit<CR>', opts)
+    vim.api.nvim_buf_set_keymap(text_buf, 'n', '<Leader>cd', ':CodeStreamCommentDiscard<CR>', opts)
   end)
+end
+
+function Comment.add(state)
+  local Help = require('./help')
+
+  -- NOTE: do this more often rather than passing in bufnr args
+  local text_buf = vim.api.nvim_win_get_buf(state.wins["text"])
+  local activity_buf = vim.api.nvim_win_get_buf(state.wins["activity"])
+
+  local text = ""
+  vim.api.nvim_buf_call(text_buf, function()
+    -- TODO: comments with multiple lines
+    -- text = vim.join(vim.fn.getline(1, '$'), "\n")
+    text = vim.fn.getline(1)
+  end)
+
+  local comment = {
+    action = "comment",
+    author = {
+      username = "zstix" -- TODO: determine user
+    },
+    date = "2022.10.07:13.20", -- TODO: determine
+    text = text,
+  }
+
+  table.insert(state.cmarks[state.active_cmark].activity, comment)
+
+  -- NOTE: non-1 value: feels hacky, bro
+  render_comment(activity_buf, comment, 2)
+
+  -- TODO: add comment to state
+
+  local comment_height = 8
+  local activity_height = vim.api.nvim_win_get_height(state.wins["activity"]) + comment_height
+
+  vim.api.nvim_win_set_height(state.wins["activity"], activity_height + 1)
+
+  local row = vim.api.nvim_win_get_config(state.wins["activity"]).row[false]
+  local config = Utils.merge_tables(vim.api.nvim_win_get_config(state.wins["input"]), {
+    height = 1,
+    row =  row + activity_height + 1,
+  })
+  vim.api.nvim_win_set_config(state.wins["input"], config)
+
+  local text_win = state.wins["text"]
+  state.wins["text"] = nil
+  vim.api.nvim_win_close(text_win, false)
+
+  state.help_state = "init"
+  -- update help
+  -- TODO: DRY this up
+  local input_buf = vim.api.nvim_win_get_buf(state.wins["input"])
+  vim.api.nvim_buf_set_lines(input_buf, 0, 0, false, Help.get_text(state))
+  -- TODO: fix colors (should be Comment highlight group)
 end
 
 return Comment

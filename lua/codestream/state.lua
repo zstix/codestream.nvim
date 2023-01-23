@@ -5,15 +5,17 @@ local state = {
   bufnr = 1,
   ns = vim.api.nvim_create_namespace(plugin_key .. "_ns"),
   augroup = vim.api.nvim_create_augroup(plugin_key .. "_augroup", { clear = true }),
+  sign_num = 1,
   sign_group = plugin_key .. "_signs",
   help_state = "init",
   wins = {},
   cmarks = {},
+  active_cmark = nil,
 }
 
 -- NOTE: for testing
-state.cmarks["init.lua:9"] = {
-  start = 9,
+state.cmarks["init.lua:6"] = {
+  start = 6,
   finish = 29,
   file = "codestream.lua",
   branch = "develop",

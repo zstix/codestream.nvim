@@ -1,9 +1,7 @@
 local state = require("./state")
 local Window = require("./window")
 local Comment = require("./comment")
-
--- TODO: add new comment buffer
--- TODO: add comment to codemark
+local Sign = require("./sign")
 
 local function setup_autocmds(state)
   vim.api.nvim_create_autocmd("WinClosed", {
@@ -28,12 +26,14 @@ end
 local function setup_keymaps(bufnr)
   local opts = { noremap = true }
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>cc', ':CodeStreamComment<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>cs', ':CodeStreamCommentWithSlack<CR>', opts)
+  -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Leader>cs', ':CodeStreamCommentWithSlack<CR>', opts)
 end
 
 vim.api.nvim_create_user_command("CodeStream", function(args)
   setup_autocmds(state)
 
+  -- TODO: what was I trying to do here?
+  -- I _think_ it's about loading the current codemark
   -- print("args", vim.inspect(args))
   -- TODO: check if theres a mark on this line first
   -- if args.range ~= 0 then
@@ -41,7 +41,7 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
   -- end
 
   -- local m = state.get_cmark()
-  local m = state.get_cmark('init.lua', 9)
+  local m = state.get_cmark('init.lua', 6)
 
   if m == nil then return end
 
@@ -51,15 +51,19 @@ vim.api.nvim_create_user_command("CodeStream", function(args)
 end, { range = true })
 
 vim.api.nvim_create_user_command("CodeStreamComment", function(args)
+  -- TODO: dynamic
+  state.active_cmark = 'init.lua:6'
+
   state.help_state = "comment"
   Comment.add_form(state)
 end, {})
 
 -- TODO
-vim.api.nvim_create_user_command("CodeStreamCommentWithSlack", function(args)
-  print("Comment! Now with Slack!")
-end, {})
+-- vim.api.nvim_create_user_command("CodeStreamCommentWithSlack", function(args)
+--   print("Comment! Now with Slack!")
+-- end, {})
 
--- for _, m in pairs(cmarks) do
---   create_sign(bufnr, m.start)
--- end
+for k, m in pairs(state.cmarks) do
+  -- TODO: only for current buffer? Autogroups?
+  Sign.create(state, m.start, k)
+end

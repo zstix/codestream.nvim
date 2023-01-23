@@ -110,16 +110,20 @@ function Window.create(state, m)
   vim.api.nvim_win_set_option(activity_win, "scl", "yes:1")
   vim.api.nvim_win_set_option(activity_win, "wrap", true)
 
-  local comment = Comment.render(activity_buf, m.activity, width)
+  local comment = Comment.render(activity_buf, m.activity)
 
   return activity_buf
 end
 
 function Window.close_all(state)
   for key, _ in pairs(state.wins) do
-    vim.api.nvim_win_close(state.wins[key], false)
+    if state.wins[key] ~= nil then
+      vim.api.nvim_win_close(state.wins[key], false)
+    end
   end
+
   state.wins = {}
+  state.help_state = "init"
 end
 
 return Window
