@@ -38,7 +38,9 @@ end
 function window.create(state, m)
   local ui = vim.api.nvim_list_uis()[1]
   local width = 60
-  local height = math.floor(ui.height * 0.9)
+  -- local height = math.floor(ui.height * 0.9)
+  -- TODO: calculate height based on UI settings?
+  local height = ui.height - 2 -- 1 for status 1 for command
   local input_height = 1
   local frame_height = 10 -- TODO: code size or max
   local code_height = 8 -- TODO: code size or max
@@ -49,7 +51,8 @@ function window.create(state, m)
     width = width,
     height = frame_height,
     col = ui.width - width,
-    row = (ui.height / 2) - (height / 2),
+    -- row = (ui.height / 2) - (height / 2),
+    row = 0,
     title = m.file .. ':' .. m.start,
   })
 
@@ -60,7 +63,8 @@ function window.create(state, m)
     width = width - 2,
     height = code_height,
     col = ui.width - width + 1,
-    row = (ui.height / 2) - (height / 2) + 1,
+    -- row = (ui.height / 2) - (height / 2) + 1,
+    row = 1,
   })
 
   vim.api.nvim_win_set_option(code_win, "winhl", "NormalFloat:Normal")
@@ -83,7 +87,8 @@ function window.create(state, m)
     width = width,
     height =input_height,
     col = ui.width - width,
-    row = (ui.height / 2) - (height / 2) + frame_height + activity_height,
+    -- row = (ui.height / 2) - (height / 2) + frame_height + activity_height,
+    row = frame_height + activity_height,
   })
 
   vim.api.nvim_buf_set_lines(input_buf, 0, -1, false, help.get_text(state))
@@ -98,7 +103,8 @@ function window.create(state, m)
     width = width,
     height = activity_height,
     col = ui.width - width,
-    row = (ui.height / 2) - (height / 2) + frame_height,
+    -- row = (ui.height / 2) - (height / 2) + frame_height,
+    row = frame_height,
   })
 
   vim.api.nvim_win_set_option(activity_win, "scl", "yes:1")
