@@ -49,4 +49,15 @@ function state.get_cmark(filename, lnum)
   return state.cmarks[filename .. ':' .. lnum]
 end
 
+function state.new_cmark(cmark_id, lnum)
+  state.cmarks[cmark_id] = {
+    start = lnum,
+    finish = lnum + 5, -- TODO: be better than this
+    file = vim.fn.bufname('%'),
+    branch = "develop", -- TODO
+    sha = "12345", -- TODO
+    activity = {},
+  }
+end
+
 return state

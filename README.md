@@ -10,8 +10,8 @@ Codestream plugin for neovim. _Very much_ a proof-of-concept.
 - [ ] Faster local development
 - [x] Break modules down better
 - [x] Create new comment
-- [ ] Create new codemark
-- [ ] Cycle between marks
+- [x] Create new codemark
+- [x] Cycle between marks
 - [ ] "Back-end" mock (JSON)
 - [ ] Screenshots?
 - [ ] Tests?
